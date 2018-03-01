@@ -1,5 +1,5 @@
-# Project 1
-<h2>Project 1:</h2>
+# Project 2
+<h2>Project 2:</h2>
 Due 3.16.2018 by 11:59pm through GitHub Classroom 
 Projects may be submitted up to 3 days late, with a 10% penalty per day.
 
