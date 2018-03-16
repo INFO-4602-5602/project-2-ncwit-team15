@@ -1,0 +1,453 @@
+<html>
+<head>
+<title>Project 0</title>
+<link rel="stylesheet" type="text/css" href="project1.css"></link>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<!--Put your D3 import statement between these two lines-->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+<!--Put your D3 import statement between these two lines-->
+</head>
+<!-- Other Department -->
+<body>
+    <div id="partNew">
+        <h1>Part Two: </h1>
+
+        <select id="d3-dropdown">
+          <option value="Computer Science">Computer Science</option>
+          <option value="Other Department">Other Department</option>
+        </select>
+
+        <div id="stackedbar">            
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+
+        d3.select("select").on("change", function () { 
+          selected = this.value;
+          d3.select(".alt-view").remove();
+          if(selected == "Computer Science"){computers()}
+          else if(selected == "Other Department"){departments()}
+       });
+        
+
+      function computers(){
+        d3.selectAll("svg").remove();
+        d3.csv("data/EthinicityWisePopulation.csv", function(error, data_ori) {
+        if(error) throw error;
+        //Format the data
+        data = []
+        data_ori.forEach(function(d){
+          if (d['Major Program Name'] === 'Computer Science') {
+            data.push(d);
+          }
+        });
+
+        // Set dimensions and margins of the graph
+        var margin = {top: 20, right: 200, bottom:60, left: 80},
+            width = 1000 - margin.left - margin.right,
+            height = 800 - margin.top - margin.bottom;
+        
+        var x0 = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+         
+        var x1 = d3.scaleBand();
+         
+        var y = d3.scaleLinear()
+            .range([height, 0]);
+         
+        /*var xAxis = d3.svg.axis()
+            .scale(x0)
+            .orient("bottom");
+         
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format(".2s"));*/
+         
+        var color = d3.scaleOrdinal()
+            .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00", "#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+         
+        var svg = d3.select("#stackedbar").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+         
+        var yBegin;
+         
+        var innerColumns = {
+          "column1" : ["Totals, Female: Asian (Tot. F)","Totals, Female: Black/African American (Tot. F)","Totals, Female: Hispanics of any race (Tot. F)","Totals, Female: American Indian/Alaska Native (Tot. F)","Totals, Female: Native Hawaiian/Other Pacific Islander (Tot. F)", "Totals, Female: Two or more races (Tot. F)", "Totals, Female: White (Tot. F)"],
+          "column2" : ["Totals, Male: Asian (Tot. M)", "Totals, Male: Black/African American (Tot. M)", "Totals, Male: Hispanics of any race (Tot. M)", "Totals, Male: American Indian/Alaska Native (Tot. M)", "Totals, Male: Native Hawaiian/Other Pacific Islander (Tot. M)", "Totals, Male: Two or more races (Tot. M)", "Totals, Male: White (Tot. M)"]       
+        }
+          
+        legendCols = ["Asian", "Black/African America", "Hispanics of any race", "American Indian/Alaska Native", "Native Hawaiian/Other Pacific Islander", "Two or more races", "White"]
+
+        var columnHeaders = d3.keys(data[0]).filter(function(key) { return (key !== "Major Program Name" && key !== "School Year"); });        
+        color.domain(d3.keys(data[0]).filter(function(key) { return (key !== "Major Program Name" && key !== "School Year"); }));
+        data.forEach(function(d) {
+          var yColumn = new Array();
+          d.columnDetails = columnHeaders.map(function(name) {
+            for (ic in innerColumns) {
+              if($.inArray(name, innerColumns[ic]) >= 0){
+                if (!yColumn[ic]){
+                  yColumn[ic] = 0;
+                }
+                yBegin = yColumn[ic];
+                yColumn[ic] += +d[name];
+                var genderVal = (name.indexOf("Female") > -1)? "Female":"Male";
+                return {name: name, column: ic, yBegin: yBegin, yEnd: +d[name] + yBegin, gender: genderVal, val: d[name], year: d['School Year'] };
+              }
+            }
+          });          
+          d.total = d3.max(d.columnDetails, function(d) { 
+            return d.yEnd; 
+          });
+        });
+
+        x0.domain(data.map(function(d) { return d['School Year']; }));
+        x1.domain(d3.keys(innerColumns)).rangeRound([0, x0.bandwidth()]);
+       
+        console.log(x0);
+        console.log(x1);
+
+        y_max_val = (d3.max(data, function(d) { 
+          return d.total; 
+        }));
+        y.domain([0, y_max_val + (y_max_val)/5]);
+       
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x0))
+            .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold")            
+            .attr("transform", "rotate(-45)");
+       
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(y))
+            .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold")    
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".7em")
+            .style("text-anchor", "end")
+            .text("");
+       
+        var project_stackedbar = svg.selectAll(".project_stackedbar")
+            .data(data)
+          .enter().append("g")
+            .attr("class", "g")
+            .attr("transform", function(d) { return "translate(" + x0(d['School Year']) + ",0)"; });
+       
+        project_stackedbar.selectAll("rect")
+            .data(function(d) { return d.columnDetails; })
+            .enter().append("rect")
+            .attr("class",function(d) { return  ((d.gender === "Male")?"male":"female")})
+            .attr("width", x1.bandwidth())
+            .attr("x", function(d) { 
+              return x1(d.column);
+               })
+            .attr("y", function(d) { 
+              return y(d.yEnd); 
+            })
+            .attr("colorHidden",  function(d) { return color(d.name); })
+            .attr("height", function(d) { 
+              return y(d.yBegin) - y(d.yEnd); 
+            })
+            .style("fill", function(d) { return color(d.name); })
+            .on("mouseover",function(d,i) {
+                d3.select(this).attr("style","fill:DarkRed ;stroke-width:3;stroke:DarkRed");   // Change color of the mouse fill when mouse is hovered over it
+
+                tooltip.style("display", null);
+            })
+            .on("mouseout", function(d,i){
+                d3.select(this).attr("style", null);
+                var ori_color = d3.select(this).attr("colorHidden")
+                d3.select(this).style("fill",ori_color);
+
+                tooltip.style("display", "none");
+            })
+            .on("mousemove", function(d,i) {
+              var xPosition = d3.mouse(this)[0] - 35;
+              var yPosition = d3.mouse(this)[1] - 55;
+              tooltip.attr("transform", "translate(" + (x0(d.year) + xPosition) + "," + yPosition + ")");
+              var text1 = d.gender 
+              var text2 = legendCols[i%7]+": "+d.val;
+              tooltip.select("#text1").attr("x",((text2.length*6)/2 - (text1.length*1.5))).text(text1);
+              tooltip.select("#text2").attr("x",((text2.length*6)/2 + 10 - ((text2.length*6) - (text2.length*6)/2))).text(text1);
+              tooltip.select("#text2").text(text2);
+              tooltip.select("rect").attr("width",(text2.length*8));
+            });              
+        
+        var legend = svg.selectAll(".legend")
+            .data(legendCols)
+          .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function(d, i) { return "translate("+margin.right+"," + i * 20 + ")"; });
+       
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+       
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .attr("font-size", "14px")
+            .attr("font-weight", "bold")
+            .text(function(d) { return d; });
+
+        // Prep the tooltip bits, initial display is hidden
+        var tooltip = svg.append("g")
+          .attr("class", "tooltip")
+          .style("display", "none");
+            
+        tooltip.append("rect")
+          .attr("width", 30)
+          .attr("height", 40)
+          .attr("fill", "black")
+          .style("opacity", 1.0)
+          .attr("rx",15)
+          .attr("ry", 15);
+
+        tooltip.append("text")             
+          .attr("dy", "1.2em")
+          .attr("id", "text1")
+          .attr('style','fill:White')
+          .attr("font-size", "12px")
+          .attr("font-weight", "bold");
+
+        tooltip.append("text")          
+          .attr("dy", "2.5em")
+          .attr("id", "text2")
+          .attr('style','fill:White')
+          .attr("font-size", "12px")
+          .attr("font-weight", "bold");
+
+
+        });
+};
+
+
+  function departments(){
+    d3.selectAll("svg").remove();
+    d3.csv("data/EthinicityWisePopulation.csv", function(error, data_ori) {
+        if(error) throw error;
+        //Format the data
+        data = []
+        data_ori.forEach(function(d){
+          if (d['Major Program Name'] === 'Other Department') {
+            data.push(d);
+          }
+        });
+
+        // Set dimensions and margins of the graph
+        var margin = {top: 20, right: 200, bottom:60, left: 80},
+            width = 1000 - margin.left - margin.right,
+            height = 800 - margin.top - margin.bottom;
+        
+        var x0 = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+         
+        var x1 = d3.scaleBand();
+         
+        var y = d3.scaleLinear()
+            .range([height, 0]);
+         
+        /*var xAxis = d3.svg.axis()
+            .scale(x0)
+            .orient("bottom");
+         
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format(".2s"));*/
+         
+        var color = d3.scaleOrdinal()
+            .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00", "#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+         
+        var svg = d3.select("#stackedbar").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+         
+        var yBegin;
+         
+        var innerColumns = {
+          "column1" : ["Totals, Female: Asian (Tot. F)","Totals, Female: Black/African American (Tot. F)","Totals, Female: Hispanics of any race (Tot. F)","Totals, Female: American Indian/Alaska Native (Tot. F)","Totals, Female: Native Hawaiian/Other Pacific Islander (Tot. F)", "Totals, Female: Two or more races (Tot. F)", "Totals, Female: White (Tot. F)"],
+          "column2" : ["Totals, Male: Asian (Tot. M)", "Totals, Male: Black/African American (Tot. M)", "Totals, Male: Hispanics of any race (Tot. M)", "Totals, Male: American Indian/Alaska Native (Tot. M)", "Totals, Male: Native Hawaiian/Other Pacific Islander (Tot. M)", "Totals, Male: Two or more races (Tot. M)", "Totals, Male: White (Tot. M)"]       
+        }
+          
+        legendCols = ["Asian", "Black/African America", "Hispanics of any race", "American Indian/Alaska Native", "Native Hawaiian/Other Pacific Islander", "Two or more races", "White"]
+
+        var columnHeaders = d3.keys(data[0]).filter(function(key) { return (key !== "Major Program Name" && key !== "School Year"); });        
+        color.domain(d3.keys(data[0]).filter(function(key) { return (key !== "Major Program Name" && key !== "School Year"); }));
+        data.forEach(function(d) {
+          var yColumn = new Array();
+          d.columnDetails = columnHeaders.map(function(name) {
+            for (ic in innerColumns) {
+              if($.inArray(name, innerColumns[ic]) >= 0){
+                if (!yColumn[ic]){
+                  yColumn[ic] = 0;
+                }
+                yBegin = yColumn[ic];
+                yColumn[ic] += +d[name];
+                var genderVal = (name.indexOf("Female") > -1)? "Female":"Male";
+                return {name: name, column: ic, yBegin: yBegin, yEnd: +d[name] + yBegin, gender: genderVal, val: d[name], year: d['School Year'] };
+              }
+            }
+          });          
+          d.total = d3.max(d.columnDetails, function(d) { 
+            return d.yEnd; 
+          });
+        });
+
+        x0.domain(data.map(function(d) { return d['School Year']; }));
+        x1.domain(d3.keys(innerColumns)).rangeRound([0, x0.bandwidth()]);
+       
+        console.log(x0);
+        console.log(x1);
+
+        y_max_val = (d3.max(data, function(d) { 
+          return d.total; 
+        }));
+        y.domain([0, y_max_val + (y_max_val)/5]);
+       
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x0))
+            .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold")            
+            .attr("transform", "rotate(-45)");
+       
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(y))
+            .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold")    
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".7em")
+            .style("text-anchor", "end")
+            .text("");
+       
+        var project_stackedbar = svg.selectAll(".project_stackedbar")
+            .data(data)
+          .enter().append("g")
+            .attr("class", "g")
+            .attr("transform", function(d) { return "translate(" + x0(d['School Year']) + ",0)"; });
+       
+        project_stackedbar.selectAll("rect")
+            .data(function(d) { return d.columnDetails; })
+            .enter().append("rect")
+            .attr("class",function(d) { return  ((d.gender === "Male")?"male":"female")})
+            .attr("width", x1.bandwidth())
+            .attr("x", function(d) { 
+              return x1(d.column);
+               })
+            .attr("y", function(d) { 
+              return y(d.yEnd); 
+            })
+            .attr("colorHidden",  function(d) { return color(d.name); })
+            .attr("height", function(d) { 
+              return y(d.yBegin) - y(d.yEnd); 
+            })
+            .style("fill", function(d) { return color(d.name); })
+            .on("mouseover",function(d,i) {
+                d3.select(this).attr("style","fill:DarkRed ;stroke-width:3;stroke:DarkRed");   // Change color of the mouse fill when mouse is hovered over it
+
+                tooltip.style("display", null);
+            })
+            .on("mouseout", function(d,i){
+                d3.select(this).attr("style", null);
+                var ori_color = d3.select(this).attr("colorHidden")
+                d3.select(this).style("fill",ori_color);
+
+                tooltip.style("display", "none");
+            })
+            .on("mousemove", function(d,i) {
+              var xPosition = d3.mouse(this)[0] - 35;
+              var yPosition = d3.mouse(this)[1] - 55;
+              tooltip.attr("transform", "translate(" + (x0(d.year) + xPosition) + "," + yPosition + ")");
+              var text1 = d.gender 
+              var text2 = legendCols[i%7]+": "+d.val;
+              tooltip.select("#text1").attr("x",((text2.length*6)/2 - (text1.length*1.5))).text(text1);
+              tooltip.select("#text2").attr("x",((text2.length*6)/2 + 10 - ((text2.length*6) - (text2.length*6)/2))).text(text1);
+              tooltip.select("#text2").text(text2);
+              tooltip.select("rect").attr("width",(text2.length*8));
+            });              
+        
+        var legend = svg.selectAll(".legend")
+            .data(legendCols)
+          .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function(d, i) { return "translate("+margin.right+"," + i * 20 + ")"; });
+       
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+       
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .attr("font-size", "14px")
+            .attr("font-weight", "bold")
+            .text(function(d) { return d; });
+
+        // Prep the tooltip bits, initial display is hidden
+        var tooltip = svg.append("g")
+          .attr("class", "tooltip")
+          .style("display", "none");
+            
+        tooltip.append("rect")
+          .attr("width", 30)
+          .attr("height", 40)
+          .attr("fill", "black")
+          .style("opacity", 1.0)
+          .attr("rx",15)
+          .attr("ry", 15);
+
+        tooltip.append("text")             
+          .attr("dy", "1.2em")
+          .attr("id", "text1")
+          .attr('style','fill:White')
+          .attr("font-size", "12px")
+          .attr("font-weight", "bold");
+
+        tooltip.append("text")          
+          .attr("dy", "2.5em")
+          .attr("id", "text2")
+          .attr('style','fill:White')
+          .attr("font-size", "12px")
+          .attr("font-weight", "bold");
+
+
+        });
+};
+computers();
+        
+        
+    </script>
+</body>
+
+
+</html>
