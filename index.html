@@ -46,7 +46,7 @@ body{background-color: #66ccff}
       </div>
 
   <div id="partNew">
-        <h1> Stacked Barchart for Enrollment </h1>
+        <h1> Ethinic Diversity accross colleges among Females and Males </h1>
         <a href="index_vibhor.html">Link to Dynamic Query 2</a>
         <div id="stackedbar">            
         </div>
@@ -86,7 +86,7 @@ body{background-color: #66ccff}
 
 
 
-    var margin = {top:20, bottom:30 , left:60 , right:60};
+    var margin = {top:20, bottom:60 , left:120 , right:60};
     var width= 700- margin.left - margin.right;
     var height = 500 - margin.bottom- margin.top;
 
@@ -97,8 +97,8 @@ body{background-color: #66ccff}
 
 
 
-    x.domain([400, d3.max(data,function(d)  {return d["Enroll, Female: Avg. SAT Math Score (Enrl F)"]})]);
-    y.domain([2000,d3.max(data,function(d) {return d["school year"]})]);
+    x.domain([400, 20+d3.max(data,function(d)  {return parseInt(d["Enroll, Female: Avg. SAT Math Score (Enrl F)"])})]);
+    y.domain([2000,2+d3.max(data,function(d) {return parseInt(d["school year"])})]);
 
 
 
@@ -238,50 +238,48 @@ body{background-color: #66ccff}
                      .attr('style','fill:White')
                      .attr("font-size", "12px")
                      .attr("font-weight", "bold");
-
-
-
-
-
-
-                  /*
-                  data.sort(function(a,b){
-                    return d3.ascending(a.x,b.y);
-                  });
-
-                  var valueline = d3.line()
-                      .x(function(d){return x(d["Enroll, Female: Avg. SAT Math Score (Enrl F)"]);})
-                      .y(function(d){return y(d["school year"]);})
-                      .curve(d3.curveLinear);
-
-
-
-                      svg.append("g")
-                         .append("path")
-                         .data([data])
-                         .attr("class", "line")
-                         .attr("d", valueline)
-                         .attr("fill", "none")
-                         .attr("stroke-width",6)
-                         .attr("stroke", "lightorange");
-                         */
+            
 
                   svg.append("g")
                     .attr("transform","translate(0,"+height+")")
-                    .call(d3.axisBottom(x))
-                    .attr("stroke-width",2);
+                    .call(d3.axisBottom(x).ticks(20))              
+                    .attr("stroke-width",2)
+                    .selectAll("text")  
+                    .style("text-anchor", "end")
+                    .attr("font-size", "12px")
+                    .attr("font-weight", "bold");       
 
                   svg.append("g")
                     .call(d3.axisLeft(y))
-                    .attr("stroke-width",6)
+                    .attr("stroke-width",2)
+                    .selectAll("text")  
+                    .style("text-anchor", "end")
+                    .attr("font-size", "12px")
+                    .attr("font-weight", "bold");
 
+                  svg.append("text")
+                     .attr("x",(width /2))
+                     .attr("y",0 - (margin-top /4))
+                     .attr("text-anchor","middle")
+                     .style("font-size","20px")                               
+                     .attr("font-weight", "bold")
+                     .text("Female SAT Avg.");
+                  
+                  // Add Y-axis Label which is "Y" here
+                  svg.append("text")
+                      .attr("text-anchor", "middle")  
+                      .attr("style","font-size: 16px;font-style: italic;")
+                      .attr("font-weight", "bold")
+                      .attr("transform", "translate("+ (0-(margin.left/2)) +","+(height/2)+") rotate (-90)")  // text is drawn off the screen top left, move down and out and rotate
+                      .text("Years");
 
-                    svg.append("text")
-                       .attr("x",(width /2))
-                       .attr("y",0 - (margin-top /2))
-                       .attr("text-anchor","middle")
-                       .style("font-size","20px")
-                       .text("Female SAT average");
+                  // Add X-axis Label which is "X" here
+                svg.append("text")
+                    .attr("text-anchor", "middle")  
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (width/2) +","+(height+(margin.bottom/1.2))+")")  // centre below axis
+                    .text("Avg. SAT Scores");
 
   });
 
@@ -299,7 +297,7 @@ body{background-color: #66ccff}
 
 
 
-    var margin = {top:20, bottom:30 , left:60 , right:60};
+    var margin = {top:20, bottom:60 , left:120 , right:60};
     var width= 700- margin.left - margin.right;
     var height = 500 - margin.bottom- margin.top;
 
@@ -310,8 +308,8 @@ body{background-color: #66ccff}
 
 
 
-    x.domain([400, d3.max(data,function(d)  {return d["Enroll, Male: Avg. SAT Math Score (Enrl M)"]})]);
-    y.domain([2000,d3.max(data,function(d) {return d["school year"]})]);
+    x.domain([400, 20+(d3.max(data,function(d)  {return parseInt(d["Enroll, Male: Avg. SAT Math Score (Enrl M)"])}))]);
+    y.domain([2000,2+(d3.max(data,function(d) {return parseInt(d["school year"])}))]);
 
 
 
@@ -423,75 +421,73 @@ body{background-color: #66ccff}
 
                   });
 
-                   var tooltip = svg.append("g")
-                     .attr("class", "tooltip2")
-                     .style("display", "none");
+             var tooltip = svg.append("g")
+               .attr("class", "tooltip2")
+               .style("display", "none");
 
-                   tooltip.append("rect")
-                     .attr("width", 70)
-                     .attr("height", 40)
-                     .attr("fill", "black")
-                     .style("opacity", 1.0)
-                     .attr("rx",15)
-                     .attr("ry", 15);
+             tooltip.append("rect")
+               .attr("width", 70)
+               .attr("height", 40)
+               .attr("fill", "black")
+               .style("opacity", 1.0)
+               .attr("rx",15)
+               .attr("ry", 15);
 
-                   tooltip.append("text")
-                     .attr("dy", "1.2em")
-                     .attr("id", "text1")
-                     .attr('style','fill:White')
-                     .attr("font-size", "12px")
-                     .attr("font-weight", "bold");
+             tooltip.append("text")
+               .attr("dy", "1.2em")
+               .attr("id", "text1")
+               .attr('style','fill:White')
+               .attr("font-size", "12px")
+               .attr("font-weight", "bold");
 
-                   tooltip.append("text")
-                     .attr("dy", "2.5em")
-                     .attr("id", "text2")
-                     .attr('style','fill:White')
-                     .attr("font-size", "12px")
-                     .attr("font-weight", "bold");
-
-
+             tooltip.append("text")
+               .attr("dy", "2.5em")
+               .attr("id", "text2")
+               .attr('style','fill:White')
+               .attr("font-size", "12px")
+               .attr("font-weight", "bold");
 
 
+            svg.append("g")
+              .attr("transform","translate(0,"+height+")")
+              .call(d3.axisBottom(x).ticks(20))              
+              .attr("stroke-width",2)
+              .selectAll("text")  
+              .style("text-anchor", "end")
+              .attr("font-size", "12px")
+              .attr("font-weight", "bold");       
 
+            svg.append("g")
+              .call(d3.axisLeft(y))
+              .attr("stroke-width",2)
+              .selectAll("text")  
+              .style("text-anchor", "end")
+              .attr("font-size", "12px")
+              .attr("font-weight", "bold");
 
-                  /*
-                  data.sort(function(a,b){
-                    return d3.ascending(a.x,b.y);
-                  });
+            svg.append("text")
+               .attr("x",(width /2))
+               .attr("y",0 - (margin-top /4))
+               .attr("text-anchor","middle")
+               .style("font-size","20px")                               
+               .attr("font-weight", "bold")
+               .text("Male SAT Avg.");
+            
+            // Add Y-axis Label which is "Y" here
+            svg.append("text")
+                .attr("text-anchor", "middle")  
+                .attr("style","font-size: 16px;font-style: italic;")
+                .attr("font-weight", "bold")
+                .attr("transform", "translate("+ (0-(margin.left/2)) +","+(height/2)+") rotate (-90)")  // text is drawn off the screen top left, move down and out and rotate
+                .text("Years");
 
-                  var valueline = d3.line()
-                      .x(function(d){return x(d["Enroll, Female: Avg. SAT Math Score (Enrl F)"]);})
-                      .y(function(d){return y(d["school year"]);})
-                      .curve(d3.curveLinear);
-
-
-
-                      svg.append("g")
-                         .append("path")
-                         .data([data])
-                         .attr("class", "line")
-                         .attr("d", valueline)
-                         .attr("fill", "none")
-                         .attr("stroke-width",6)
-                         .attr("stroke", "lightorange");
-                         */
-
-                  svg.append("g")
-                    .attr("transform","translate(0,"+height+")")
-                    .call(d3.axisBottom(x))
-                    .attr("stroke-width",2);
-
-                  svg.append("g")
-                    .call(d3.axisLeft(y))
-                    .attr("stroke-width",6)
-
-                    svg.append("text")
-                       .attr("x",(width /2))
-                       .attr("y",0 - (margin-top /2))
-                       .attr("text-anchor","middle")
-                       .style("font-size","20px")
-                       .text("Male SAT average");
-
+            // Add X-axis Label which is "X" here
+            svg.append("text")
+                .attr("text-anchor", "middle")  
+                .attr("style","font-size: 16px;font-style: italic;")
+                .attr("font-weight", "bold")
+                .attr("transform", "translate("+ (width/2) +","+(height+(margin.bottom/1.2))+")")  // centre below axis
+                .text("Avg. SAT Scores");
 
 
   });
@@ -506,7 +502,7 @@ d3.csv("data/EthinicityWisePopulation.csv", function(error, data_ori) {
         });
 
         // Set dimensions and margins of the graph
-        var margin = {top: 20, right: 200, bottom:60, left: 80},
+        var margin = {top: 20, right: 200, bottom:120, left: 120},
             width = 1000 - margin.left - margin.right,
             height = 800 - margin.top - margin.bottom;
         
@@ -516,16 +512,7 @@ d3.csv("data/EthinicityWisePopulation.csv", function(error, data_ori) {
          
         var y = d3.scaleLinear()
             .range([height, 0]);
-         
-        /*var xAxis = d3.svg.axis()
-            .scale(x0)
-            .orient("bottom");
-         
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .tickFormat(d3.format(".2s"));*/
-         
+
         var color = d3.scaleOrdinal()
             .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00", "#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
          
@@ -581,6 +568,7 @@ d3.csv("data/EthinicityWisePopulation.csv", function(error, data_ori) {
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x0))
+            .attr("stroke-width",2)
             .selectAll("text")  
             .style("text-anchor", "end")
             .attr("font-size", "12px")
@@ -590,6 +578,7 @@ d3.csv("data/EthinicityWisePopulation.csv", function(error, data_ori) {
         svg.append("g")
             .attr("class", "y axis")
             .call(d3.axisLeft(y))
+            .attr("stroke-width",2)
             .selectAll("text")  
             .style("text-anchor", "end")
             .attr("font-size", "12px")
@@ -667,6 +656,32 @@ d3.csv("data/EthinicityWisePopulation.csv", function(error, data_ori) {
             .attr("font-size", "14px")
             .attr("font-weight", "bold")
             .text(function(d) { return d; });
+
+                // Add heading/title of the Plot
+        svg.append("text")
+            .attr("x", (width / 2))             
+            .attr("y", 0 - (margin.top / 4))
+            .attr("text-anchor", "middle")  
+            .style("font-size", "20px") 
+            .attr("font-weight", "bold")
+            //.style("text-decoration", "underline")  
+            .text("Computer Science Departments");
+        
+        // Add Y-axis Label which is "Y" here
+        svg.append("text")
+            .attr("text-anchor", "middle")  
+            .attr("style","font-size: 16px;font-style: italic;")
+            .attr("font-weight", "bold")
+            .attr("transform", "translate("+ (0-(margin.left/2)) +","+(height/2)+") rotate (-90)")  // text is drawn off the screen top left, move down and out and rotate
+            .text("# Students");
+
+        // Add X-axis Label which is "X" here
+        svg.append("text")
+            .attr("text-anchor", "middle")  
+            .attr("style","font-size: 16px;font-style: italic;")
+            .attr("font-weight", "bold")
+            .attr("transform", "translate("+ (width/2) +","+(height+(margin.bottom/1.5))+")")  // centre below axis
+            .text("Years");
 
         // Prep the tooltip bits, initial display is hidden
         var tooltip = svg.append("g")
