@@ -1,0 +1,33 @@
+body {
+    font-family: sans-serif;
+    font-size: 20px;
+    
+}
+
+p {
+    color: #9400D3;
+}
+
+h1 {
+    color: #368700;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.point {
+    fill: #f00; 
+    stroke: #000;
+}
+
+.label {
+    text-anchor: middle;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
