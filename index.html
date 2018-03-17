@@ -53,14 +53,14 @@ body{background-color: #66ccff}
     </div>
   </div>
   <div id="partTwo">
-        <h1 >Number of Graduates based on Instituiton: Males </h1>
+        <h1 >Number of Graduates based on Institution: Males </h1>
         <div id="scatterplot">
             <p id="scatterLabel"></p>
         </div>
     </div>
     <br/><br/><br/><br/><br/><br/><br/>
     <div id="partTwoFemale">
-        <h1 >Number of Graduates based on Instituiton: Females </h1>
+        <h1 >Number of Graduates based on Institution: Females </h1>
         <div id="scatterplotFemale">
             <p id="scatterLabelFemale"></p>
         </div>
@@ -717,7 +717,7 @@ var xVal = vals[0]; // Value to plot on x-axis
 var yVal = vals[1]; // Value to plot on y-axis
 
 // set the dimensions and margins of the graph
-var margin = {top: 20, right: 20, bottom: 30, left: 50};
+var margin = {top: 20, right: 60, bottom: 30, left: 120};
 var width = 960 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 
@@ -760,7 +760,7 @@ d3.csv("queryResults.csv", function(error, data) {
 
     var mouseover = function(d) {
           var p = d3.select(this)
-            .style("fill", "blue");}
+            .style("fill", "red");}
 
     var mouseout = function(d) {
           var p = d3.select(this)
@@ -796,20 +796,34 @@ d3.csv("queryResults.csv", function(error, data) {
      //     Add the Y Axis
     svg.append("g")
         .call(d3.axisLeft(y1));
+     //Add title   
+    svg.append("text")
+        .attr("x", (width/2))
+        .attr("y", 0 - (margin-top/4))
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .attr("font-weight", "bold")
+        .text("Number Graduated")
+
+
 
     //Add text labels
     var xLabel = svg.append("text")
-                    .attr("class", "label")
+                    .attr("text-anchor", "middle") 
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (width/2) +","+(height+(margin.bottom))+")")
                     .text("InstituitionID")
-                    .attr("x", width - 20)
-                    .attr("y", height + 30);
+                    
 
     var yLabel = svg.append("text")
-                    .attr("class", "label")
+                    .attr("text-anchor", "middle") 
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (0-(margin.left/2)) +","+(height/2)+") rotate (-90)")
                     .text("Male graduated")
-                    .attr("y", -10)
-                    .attr("transform", "rotate(90)")
-                    .style("text-anchor", "start");
+                   
+
 });
 
 //FOR FEMALE++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -819,7 +833,7 @@ var xValFemale = valsFemale[0]; // Value to plot on x-axis
 var yValFemale = valsFemale[1]; // Value to plot on y-axis
 
 // set the dimensions and margins of the graph
-var marginFemale = {top: 20, right: 20, bottom: 30, left: 50};
+var marginFemale = {top: 20, right: 60, bottom: 30, left: 120};
 var widthFemale = 960 - marginFemale.left - marginFemale.right;
 var heightFemale = 500 - marginFemale.top - marginFemale.bottom;
 
@@ -862,7 +876,7 @@ d3.csv("queryResults.csv", function(error, data) {
 
     var mouseover = function(d) {
           var p = d3.select(this)
-            .style("fill", "blue");}
+            .style("fill", "red");}
 
     var mouseout = function(d) {
           var p = d3.select(this)
@@ -898,20 +912,29 @@ d3.csv("queryResults.csv", function(error, data) {
      //     Add the Y Axis
     svgFemale.append("g")
         .call(d3.axisLeft(y1Female));
+    svgFemale.append("text")
+        .attr("x", (width/2))
+        .attr("y", 0 - (margin-top/4))
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .attr("font-weight", "bold")
+        .text("Number Graduated")
 
     //Add text labels
     var xLabel = svgFemale.append("text")
-                    .attr("class", "label")
+                    .attr("text-anchor", "middle") 
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (width/2) +","+(height+(margin.bottom))+")")
                     .text("InstituitionID")
-                    .attr("x", widthFemale - 20)
-                    .attr("y", heightFemale + 30);
+                    
 
     var yLabelFemale = svgFemale.append("text")
-                    .attr("class", "label")
-                    .text("Female graduated")
-                    .attr("y", -10)
-                    .attr("transform", "rotate(90)")
-                    .style("text-anchor", "start");
+                    .attr("text-anchor", "middle") 
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (0-(margin.left/2)) +","+(height/2)+") rotate (-90)")
+                    .text("Females graduated")
 });
 
 
