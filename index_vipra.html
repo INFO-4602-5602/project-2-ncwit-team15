@@ -1,0 +1,257 @@
+<!--sudo /opt/lampp/lampp start -->
+
+<html>
+<head>
+<title>Project 1</title>
+<link rel="stylesheet" href="project1.css"></style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<!--Put your D3 import statement between these two lines-->
+<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<!--Put your D3 import statement between these two lines-->
+
+
+</head>
+
+<body background="background_image_9.jpg">
+    <div id="partTwo">
+        <h1 >Part Two: </h1>
+        <select id="d3-dropdown">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+        <div id="scatterplot">
+            <p id="scatterLabel"></p>
+        </div>
+    </div>
+    <br/><br/><br/><br/><br/><br/><br/>
+    <!-- <div id="partTwoFemale">
+        <h1 >Part Two Female: </h1>
+        <div id="scatterplotFemale">
+            <p id="scatterLabelFemale"></p>
+        </div>
+    </div>
+    <br/><br/><br/><br/><br/><br/><br/> -->
+    
+    <script type="text/javascript">
+// Put your part two code here ***********************
+//FOR MALE++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+d3.select("select").on("change", function () { 
+          selected = this.value;
+          d3.select(".alt-view").remove();
+          if(selected == "Male"){males()}
+          else if(selected == "Female"){females()}
+       });
+
+// set the dimensions and margins of the graph
+var margin = {top: 20, right: 20, bottom: 30, left: 50};
+var width = 960 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+
+       function males(){
+        d3.selectAll("svg").remove();
+var vals = ['x', 'y2']; // List of data attributes
+var xVal = vals[0]; // Value to plot on x-axis
+var yVal = vals[1]; // Value to plot on y-axis
+
+// set the ranges
+
+var x1 = d3.scaleLinear().range([0, width]);
+var y1 = d3.scaleLinear().range([height, 0]);
+
+// append the svg obgect to the body of the page
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+var svg = d3.select("#partTwo").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Get the data
+d3.csv("./data/queryResults.csv", function(error, data) {
+    if  (error) throw error;
+    // Scale the range of the data
+    var yMax = d3.max(data, function(d) { return d[yVal];});
+
+    var xScale = d3.scaleLinear()
+          .domain([0, d3.max(data, function (d) { return d[xVal] + 10; })])
+          .range([margin.left, width - margin.right]);  // Set margins for x specific
+
+      // We're passing in a function in d3.max to tell it what we're maxing (y value)
+    var yScale = d3.scaleLinear()
+          .domain([0, d3.max(data, function (d) { return d[yVal] + 10; })])
+          .range([margin.top, height - margin.bottom]);  // Set margins for y specific
+
+    x1.domain(d3.extent(data, function(d) {
+                                return +d[xVal];
+                            }));
+    y1.domain(d3.extent(data, function(d) {
+                                return +d[yVal];
+                            }));
+     //     Add the scatterplot points
+
+    var mouseover = function(d) {
+          var p = d3.select(this)
+            .style("fill", "blue");}
+
+    var mouseout = function(d) {
+          var p = d3.select(this)
+            .style("fill", "red");}
+
+
+    svg.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("r", 5)
+        .attr("cx", function(d) {
+                        return x1(d[xVal]);
+                    })
+        .attr("cy", function(d) {
+                        return y1(d[yVal]);
+                            })
+        .attr("fill", "red")
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout) 
+        .on("click", function(d) {
+            $("#scatterLabel").html("<p>" + "InstituitionID: " + d.x + " &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Male graduated: " + d.y2 + "</p>")
+        })
+            //return "x: " + d.x + "\ny: " + d.y;})
+        .append("svg:title")
+        .text(function(d) {return "InstituitionID: " + d.x + "\nMale graduated: " + d.y2;});
+
+     //     Add the X Axis
+    svg.append("g")
+        .attr("transform", "translate(0, " + height + ")")
+        .call(d3.axisBottom(x1));
+
+     //     Add the Y Axis
+    svg.append("g")
+        .call(d3.axisLeft(y1));
+
+    //Add text labels
+    var xLabel = svg.append("text")
+                    .attr("class", "label")
+                    .text("InstituitionID")
+                    .attr("x", width - 20)
+                    .attr("y", height + 30);
+
+    var yLabel = svg.append("text")
+                    .attr("class", "label")
+                    .text("Male graduated")
+                    .attr("y", -10)
+                    .attr("transform", "rotate(90)")
+                    .style("text-anchor", "start");
+});
+};
+
+//FOR FEMALE++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+function females(){
+    d3.selectAll("svg").remove();
+var valsFemale = ['x', 'y1']; // List of data attributes
+var xValFemale = valsFemale[0]; // Value to plot on x-axis
+var yValFemale = valsFemale[1]; // Value to plot on y-axis
+
+// set the dimensions and margins of the graph
+var marginFemale = {top: 20, right: 20, bottom: 30, left: 50};
+var widthFemale = 960 - marginFemale.left - marginFemale.right;
+var heightFemale = 500 - marginFemale.top - marginFemale.bottom;
+
+// set the ranges
+
+var x1Female = d3.scaleLinear().range([0, widthFemale]);
+var y1Female = d3.scaleLinear().range([heightFemale, 0]);
+
+// append the svg obgect to the body of the page
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+var svgFemale = d3.select("#partTwo").append("svg")
+                .attr("width", widthFemale + marginFemale.left + marginFemale.right)
+                .attr("height", heightFemale + marginFemale.top + marginFemale.bottom)
+                .append("g")
+                .attr("transform", "translate(" + marginFemale.left + "," + marginFemale.top + ")");
+
+// Get the data
+d3.csv("./data/queryResults.csv", function(error, data) {
+    if  (error) throw error;
+    // Scale the range of the data
+    var yMax = d3.max(data, function(d) { return d[yValFemale];});
+
+    var xScale = d3.scaleLinear()
+          .domain([0, d3.max(data, function (d) { return d[xValFemale] + 10; })])
+          .range([margin.left, widthFemale - marginFemale.right]);  // Set margins for x specific
+
+      // We're passing in a function in d3.max to tell it what we're maxing (y value)
+    var yScale = d3.scaleLinear()
+          .domain([0, d3.max(data, function (d) { return d[yValFemale] + 10; })])
+          .range([marginFemale.top, heightFemale - marginFemale.bottom]);  // Set margins for y specific
+
+    x1Female.domain(d3.extent(data, function(d) {
+                                return +d[xValFemale];
+                            }));
+    y1Female.domain(d3.extent(data, function(d) {
+                                return +d[yValFemale];
+                            }));
+     //     Add the scatterplot points
+
+    var mouseover = function(d) {
+          var p = d3.select(this)
+            .style("fill", "blue");}
+
+    var mouseout = function(d) {
+          var p = d3.select(this)
+            .style("fill", "red");}
+
+
+    svgFemale.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("r", 5)
+        .attr("cx", function(d) {
+                        return x1Female(d[xValFemale]);
+                    })
+        .attr("cy", function(d) {
+                        return y1Female(d[yValFemale]);
+                            })
+        .attr("fill", "red")
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout) 
+        .on("click", function(d) {
+            $("#scatterLabelFemale").html("<p>" + "InstituitionID: " + d.x + " &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Female graduated: " + d.y1 + "</p>")
+        })
+            //return "x: " + d.x + "\ny: " + d.y;})
+        .append("svg:title")
+        .text(function(d) {return "InstituitionID: " + d.x + "\nFemale graduated: " + d.y1;});
+
+     //     Add the X Axis
+    svgFemale.append("g")
+        .attr("transform", "translate(0, " + heightFemale + ")")
+        .call(d3.axisBottom(x1Female));
+
+     //     Add the Y Axis
+    svgFemale.append("g")
+        .call(d3.axisLeft(y1Female));
+
+    //Add text labels
+    var xLabel = svgFemale.append("text")
+                    .attr("class", "label")
+                    .text("InstituitionID")
+                    .attr("x", widthFemale - 20)
+                    .attr("y", heightFemale + 30);
+
+    var yLabelFemale = svgFemale.append("text")
+                    .attr("class", "label")
+                    .text("Female graduated")
+                    .attr("y", -10)
+                    .attr("transform", "rotate(90)")
+                    .style("text-anchor", "start");
+});
+};
+males();
+    </script>
+</body>
+
+
+</html>
