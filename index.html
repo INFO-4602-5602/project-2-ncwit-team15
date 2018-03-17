@@ -2,7 +2,7 @@
 
 <head>
 <title>Project 2</title>
-
+<link rel="stylesheet" href="project1.css"></style>
 <style> /* set the CSS */
 
 .line {
@@ -804,7 +804,7 @@ d3.csv("queryResults.csv", function(error, data) {
 
      //     Add the X Axis
     svg.append("g")
-        .attr("transform", "translate(0, " + heightFemale + ")")
+        .attr("transform", "translate(0, " + height + ")")
         .call(d3.axisBottom(x1))
         .attr("stroke-width",2)
         .selectAll("text")  
@@ -947,8 +947,8 @@ d3.csv("queryResults.csv", function(error, data) {
 
      //     Add the X Axis
     svgFemale.append("g")
-        .attr("transform", "translate(0, " + height + ")")
-        .call(d3.axisBottom(x1))
+        .attr("transform", "translate(0, " + heightFemale + ")")
+        .call(d3.axisBottom(x1Female))
         .attr("stroke-width",2)
         .selectAll("text")  
         .style("text-anchor", "end")
@@ -957,7 +957,7 @@ d3.csv("queryResults.csv", function(error, data) {
 
      //     Add the Y Axis
     svgFemale.append("g")
-        .call(d3.axisLeft(y1))
+        .call(d3.axisLeft(y1Female))
         .attr("stroke-width",2)
         .selectAll("text")  
         .style("text-anchor", "end")

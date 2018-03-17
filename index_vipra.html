@@ -15,11 +15,12 @@
 
 <body background="background_image_9.jpg">
     <div id="partTwo">
+        <a href="index.html"> <- Back to Home </a>
         <h1 >Graduates based on Institution: </h1>
         <select id="d3-dropdown">
             <option value="both">Both</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           
         </select>
         <div id="scatterplot">
@@ -27,8 +28,7 @@
         </div>
     </div>
     <br/><br/><br/><br/><br/><br/><br/>
-    <div id="partTwoFemale">
-        <h1 >Graduates based on Institution Female: </h1>
+    <div id="partTwoFemale">        
         <div id="scatterplotFemale">
             <p id="scatterLabelFemale"></p>
         </div>
@@ -140,7 +140,7 @@ d3.csv("./data/queryResults.csv", function(error, data) {
      //     Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0, " + height + ")")
-        .call(d3.axisBottom(x1))
+        .call(d3.axisBottom(x1).ticks(10))
         .attr("stroke-width",2)
         .selectAll("text")  
         .style("text-anchor", "end")
@@ -155,6 +155,16 @@ d3.csv("./data/queryResults.csv", function(error, data) {
         .style("text-anchor", "end")
         .attr("font-size", "12px")
         .attr("font-weight", "bold");
+
+
+         //Add title   
+    svg.append("text")
+        .attr("x", (width/2))
+        .attr("y", 0 - (margin-top/4))
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .attr("font-weight", "bold")
+        .text("Males Graduated")
 
     //Add text labels
     var xLabel = svg.append("text")
@@ -219,35 +229,46 @@ d3.csv("./data/queryResults.csv", function(error, data) {
           .domain([0, d3.max(data, function (d) { return d[yValFemale] + 10; })])
           .range([marginFemale.top, heightFemale - marginFemale.bottom]);  // Set margins for y specific
 
-    x1Female.domain(d3.extent(data, function(d) {
+    x1_domain = d3.extent(data, function(d) {
                                 return +d[xValFemale];
-                            }));
-    y1Female.domain(d3.extent(data, function(d) {
+                            });
+
+    y1_domain = d3.extent(data, function(d) {
                                 return +d[yValFemale];
-                            }));
-     //     Add the scatterplot points
+                            });
+
+    x1Female.domain([-10,x1_domain[1]+50]);
+    y1Female.domain([-49,y1_domain[1]+100]);
 
     var mouseover = function(d) {
           var p = d3.select(this)
-            .style("fill", "blue");}
+             .transition()
+             .duration(100)
+             .attr("r", 11)
+             .style("fill","red");}
 
     var mouseout = function(d) {
           var p = d3.select(this)
-            .style("fill", "red");}
+             .transition()
+             .duration(100)
+             .attr("r", 7)
+             .style("fill", "orange");}
 
 
     svgFemale.selectAll("circle")
         .data(data)
         .enter()
         .append("circle")
-        .attr("r", 5)
+        .attr("r", 7)
+        .attr("stroke","gray")
+        .attr("stroke-width",1)    
         .attr("cx", function(d) {
                         return x1Female(d[xValFemale]);
                     })
         .attr("cy", function(d) {
                         return y1Female(d[yValFemale]);
                             })
-        .attr("fill", "red")
+        .attr("fill", "orange")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout) 
         .on("click", function(d) {
@@ -258,27 +279,51 @@ d3.csv("./data/queryResults.csv", function(error, data) {
         .text(function(d) {return "InstituitionID: " + d.x + "\nFemale graduated: " + d.y1;});
 
      //     Add the X Axis
-    svgFemale.append("g")
-        .attr("transform", "translate(0, " + heightFemale + ")")
-        .call(d3.axisBottom(x1Female));
+   svgFemale.append("g")
+        .attr("transform", "translate(0, " + height + ")")
+        .call(d3.axisBottom(x1Female).ticks(10))
+        .attr("stroke-width",2)
+        .selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold");   
 
      //     Add the Y Axis
     svgFemale.append("g")
-        .call(d3.axisLeft(y1Female));
+        .call(d3.axisLeft(y1Female))
+        .attr("stroke-width",2)
+        .selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold");
 
-    //Add text labels
+    svgFemale.append("text")
+        .attr("x", (widthFemale/2))
+        .attr("y", 0 - (marginFemale-marginFemale.top/4))
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .attr("font-weight", "bold")
+        .text("Females Graduated")
+
+   //Add text labels
     var xLabel = svgFemale.append("text")
                     .attr("class", "label")
-                    .text("InstituitionID")
-                    .attr("x", widthFemale - 20)
-                    .attr("y", heightFemale + 30);
+                    .text("Instituition IDs")
+                    //.attr("x", width - 20)
+                    //.attr("y", height + 30);
+                    .attr("text-anchor", "middle")  
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (widthFemale/2) +","+(heightFemale+(marginFemale.bottom/1.2))+")")  // centre below axis
 
-    var yLabelFemale = svgFemale.append("text")
+    var yLabel = svgFemale.append("text")
                     .attr("class", "label")
-                    .text("Female graduated")
-                    .attr("y", -10)
-                    .attr("transform", "rotate(90)")
-                    .style("text-anchor", "start");
+                    .text("Graduated Students")
+                    //.attr("y", -10)
+                    .attr("text-anchor", "middle")  
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (0-(marginFemale.left/2)) +","+(heightFemale/2)+") rotate (-90)")  // text is drawn off the screen top 
 });
 };
 
@@ -317,35 +362,47 @@ d3.csv("queryResults.csv", function(error, data) {
           .domain([0, d3.max(data, function (d) { return d[yVal] + 10; })])
           .range([margin.top, height - margin.bottom]);  // Set margins for y specific
 
-    x1.domain(d3.extent(data, function(d) {
+    x1_domain = d3.extent(data, function(d) {
                                 return +d[xVal];
-                            }));
-    y1.domain(d3.extent(data, function(d) {
+                            });
+
+    y1_domain = d3.extent(data, function(d) {
                                 return +d[yVal];
-                            }));
+                            });
+
+    x1.domain([-10,x1_domain[1]+50]);
+    y1.domain([-49,y1_domain[1]+500]);
      //     Add the scatterplot points
 
     var mouseover = function(d) {
           var p = d3.select(this)
-            .style("fill", "blue");}
+             .transition()
+             .duration(100)
+             .attr("r", 11)
+             .style("fill","red");}
 
     var mouseout = function(d) {
           var p = d3.select(this)
-            .style("fill", "red");}
+             .transition()
+             .duration(100)
+             .attr("r", 7)
+             .style("fill", "orange");}
 
 
     svg.selectAll("circle")
         .data(data)
         .enter()
         .append("circle")
-        .attr("r", 5)
+         .attr("r", 7)
+        .attr("stroke","gray")        
+        .attr("stroke-width",1)
         .attr("cx", function(d) {
                         return x1(d[xVal]);
                     })
         .attr("cy", function(d) {
                         return y1(d[yVal]);
                             })
-        .attr("fill", "red")
+        .attr("fill", "orange")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout) 
         .on("click", function(d) {
@@ -356,27 +413,52 @@ d3.csv("queryResults.csv", function(error, data) {
         .text(function(d) {return "InstituitionID: " + d.x + "\nMale graduated: " + d.y2;});
 
      //     Add the X Axis
+     //     Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0, " + height + ")")
-        .call(d3.axisBottom(x1));
+        .call(d3.axisBottom(x1).ticks(10))
+        .attr("stroke-width",2)
+        .selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold");  
 
      //     Add the Y Axis
     svg.append("g")
-        .call(d3.axisLeft(y1));
+        .call(d3.axisLeft(y1))
+        .attr("stroke-width",2)
+        .selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold");
 
-    //Add text labels
+     //Add title   
+    svg.append("text")
+        .attr("x", (width/2))
+        .attr("y", 0 - (margin-top/4))
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .attr("font-weight", "bold")
+        .text("Males Graduated")
+
     var xLabel = svg.append("text")
                     .attr("class", "label")
-                    .text("InstituitionID")
-                    .attr("x", width - 20)
-                    .attr("y", height + 30);
+                    .text("Instituition IDs")
+                    //.attr("x", width - 20)
+                    //.attr("y", height + 30);
+                    .attr("text-anchor", "middle")  
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (width/2) +","+(height+(margin.bottom/1.2))+")")  // centre below axis
 
     var yLabel = svg.append("text")
                     .attr("class", "label")
-                    .text("Male graduated")
-                    .attr("y", -10)
-                    .attr("transform", "rotate(90)")
-                    .style("text-anchor", "start");
+                    .text("Graduated Students")
+                    //.attr("y", -10)
+                    .attr("text-anchor", "middle")  
+                    .attr("style","font-size: 16px;font-style: italic;")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate("+ (0-(margin.left/2)) +","+(height/2)+") rotate (-90)")  // text is drawn off the screen top 
 });
 
 //FOR FEMALE++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -386,7 +468,7 @@ var xValFemale = valsFemale[0]; // Value to plot on x-axis
 var yValFemale = valsFemale[1]; // Value to plot on y-axis
 
 // set the dimensions and margins of the graph
-var marginFemale = {top: 20, right: 20, bottom: 30, left: 50};
+var marginFemale = {top: 20, right: 20, bottom: 60, left: 120};
 var widthFemale = 960 - marginFemale.left - marginFemale.right;
 var heightFemale = 500 - marginFemale.top - marginFemale.bottom;
 
@@ -473,7 +555,7 @@ d3.csv("queryResults.csv", function(error, data) {
      //     Add the X Axis
     svgFemale.append("g")
         .attr("transform", "translate(0, " + heightFemale + ")")
-        .call(d3.axisBottom(x1Female))
+        .call(d3.axisBottom(x1Female).ticks(10))
         .attr("stroke-width",2)
         .selectAll("text")  
         .style("text-anchor", "end")
@@ -489,6 +571,14 @@ d3.csv("queryResults.csv", function(error, data) {
         .attr("font-size", "12px")
         .attr("font-weight", "bold");
 
+    svgFemale.append("text")
+        .attr("x", (widthFemale/2))
+        .attr("y", 0 - (marginFemale-marginFemale.top/4))
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .attr("font-weight", "bold")
+        .text("Females Graduated")
+
     //Add text labels
     var xLabel = svgFemale.append("text")
                     .attr("class", "label")
@@ -498,16 +588,16 @@ d3.csv("queryResults.csv", function(error, data) {
                     .attr("text-anchor", "middle")  
                     .attr("style","font-size: 16px;font-style: italic;")
                     .attr("font-weight", "bold")
-                    .attr("transform", "translate("+ (width/2) +","+(height+(margin.bottom/1.2))+")")  // centre below axis
+                    .attr("transform", "translate("+ (widthFemale/2) +","+(heightFemale+(marginFemale.bottom/1.2))+")")  // centre below axis
 
     var yLabel = svgFemale.append("text")
                     .attr("class", "label")
-                    .text("Male graduated")
+                    .text("Graduated Students")
                     //.attr("y", -10)
                     .attr("text-anchor", "middle")  
                     .attr("style","font-size: 16px;font-style: italic;")
                     .attr("font-weight", "bold")
-                    .attr("transform", "translate("+ (0-(margin.left/2)) +","+(height/2)+") rotate (-90)")  // text is drawn off the screen top 
+                    .attr("transform", "translate("+ (0-(marginFemale.left/2)) +","+(heightFemale/2)+") rotate (-90)")  // text is drawn off the screen top 
 });
 };
 
