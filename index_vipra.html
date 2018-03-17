@@ -2,8 +2,8 @@
 
 <html>
 <head>
-<title>Project 1</title>
-<link rel="stylesheet" href="project1.css"></style>
+<title>Project 2</title>
+<style>body{background-color: #66ccff}</style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <!--Put your D3 import statement between these two lines-->
 <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
@@ -14,7 +14,8 @@
 
 <body background="background_image_9.jpg">
     <div id="partTwo">
-        <h1 >Part Two: </h1>
+        <a href="index.html"> <- Back to Home </a>
+        <h1 >Number of Graduates based on Institution </h1>
         <select id="d3-dropdown">
           <option value="Male">Male</option>
           <option value="Female">Female</option>
@@ -69,7 +70,7 @@ var svg = d3.select("#partTwo").append("svg")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Get the data
-d3.csv("./data/queryResults.csv", function(error, data) {
+d3.csv("queryResults.csv", function(error, data) {
     if  (error) throw error;
     // Scale the range of the data
     var yMax = d3.max(data, function(d) { return d[yVal];});
@@ -173,7 +174,7 @@ var svgFemale = d3.select("#partTwo").append("svg")
                 .attr("transform", "translate(" + marginFemale.left + "," + marginFemale.top + ")");
 
 // Get the data
-d3.csv("./data/queryResults.csv", function(error, data) {
+d3.csv("queryResults.csv", function(error, data) {
     if  (error) throw error;
     // Scale the range of the data
     var yMax = d3.max(data, function(d) { return d[yValFemale];});
